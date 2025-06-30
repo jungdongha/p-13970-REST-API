@@ -62,24 +62,15 @@ public class ApiV1PostController {
     ) {
     }
 
-    record PostWriteResBody(
-            long totalCount,
-            PostDto post
-    ) {
-    }
-
     @PostMapping
     @Transactional
-    public RsData<PostWriteResBody> write(@Valid @RequestBody PostWriteReqBody reqBody) {
+    public RsData<PostDto> write(@Valid @RequestBody PostWriteReqBody reqBody) {
         Post post = postService.write(reqBody.title, reqBody.content);
 
         return new RsData<>(
                 "201-1",
                 "%d번 글이 작성되었습니다.".formatted(post.getId()),
-                new PostWriteResBody(
-                        postService.count(),
-                        new PostDto(post)
-                )
+                new PostDto(post)
         );
     }
 
@@ -101,7 +92,6 @@ public class ApiV1PostController {
     ) {
         Post post = postService.findById(id).get();
         postService.modify(post, reqBody.title, reqBody.content);
-        //트랜잭션을 걸었으니 save를 안해도 저장된다.
 
         return new RsData<>(
                 "200-1",
